@@ -1,9 +1,15 @@
 mod offline;
 
-use std::sync::Arc;
-use axum::{extract::State, http::header, response::{Html, IntoResponse}, routing::{get, post}, Json, Router};
+use axum::{
+    extract::State,
+    http::header,
+    response::{Html, IntoResponse},
+    routing::{get, post},
+    Json, Router,
+};
 use serde::Serialize;
 use songverse_player_core::{advance, Set};
+use std::sync::Arc;
 use tokio::sync::Mutex;
 
 struct PlayerState {
@@ -20,7 +26,10 @@ struct Snapshot {
 
 async fn snapshot(State(state): State<Shared>) -> Json<Snapshot> {
     let state = state.lock().await;
-    Json(Snapshot { set: state.set.clone(), index: state.index })
+    Json(Snapshot {
+        set: state.set.clone(),
+        index: state.index,
+    })
 }
 async fn next(State(state): State<Shared>) -> Json<usize> {
     let mut state = state.lock().await;
@@ -32,14 +41,22 @@ async fn previous(State(state): State<Shared>) -> Json<usize> {
     state.index = advance(state.index, state.set.slides.len(), -1);
     Json(state.index)
 }
-async fn health() -> &'static str { "ok" }
+async fn health() -> &'static str {
+    "ok"
+}
 async fn screen() -> impl IntoResponse {
-    ([(header::CACHE_CONTROL, "no-store")], Html(include_str!("../../../web/renderer/index.html")))
+    (
+        [(header::CACHE_CONTROL, "no-store")],
+        Html(include_str!("../../../web/renderer/index.html")),
+    )
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let state = Arc::new(Mutex::new(PlayerState { set: Set::demo(), index: 0 }));
+    let state = Arc::new(Mutex::new(PlayerState {
+        set: Set::demo(),
+        index: 0,
+    }));
     let mut app = Router::new()
         .route("/health", get(health))
         .route("/api/state", get(snapshot))

@@ -4,7 +4,7 @@
 
 The Rust daemon now supports read-only delivery of an **externally prepared** screen frontend bundle from a local directory. It verifies a SHA-256 digest manifest on startup and verifies each response's bytes. It only serves `index.html` at `/offline/screen` and manifest-listed assets under `/assets/*`, bound to `127.0.0.1:8787`.
 
-This is **not** a built or packaged copy of the real Songverse renderer. It is intentionally separate from the existing mock screen at `/screen`.
+The daemon only serves what it's given; Songverse's client-only stage build, packaged by `tools/package-upstream-screen.sh`, is what it's given (see [frontend build](frontend-build.md)). It is separate from the mock screen at `/screen`.
 
 ## Bundle layout
 

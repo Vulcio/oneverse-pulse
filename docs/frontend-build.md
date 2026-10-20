@@ -32,7 +32,7 @@ Open `http://127.0.0.1:8787/offline/screen` in Chromium. The page polls the Rust
 
 ## What it does not yet prove
 
-- CI build compatibility has not been checked; the pipeline still needs execution.
+- This repository's CI doesn't build the upstream bundle; Songverse's own e2e suite (`e2e/web/player-screen.test.mjs`) builds it and checks it renders against a stand-in for this player's `/api/state`.
 - The first offline screen shows a mocked local set, not real downloaded Songverse content.
 - Remote pairing and session authorization are not available offline.
 - Real custom themes, assets, chart data, embedded videos, widgets, synchronization and failover require an authoritative local snapshot contract.

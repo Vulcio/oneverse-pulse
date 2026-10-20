@@ -1,9 +1,19 @@
 //! Verified, read-only local web assets. This is transport, not the screen renderer.
 //! A bundle is provisioned externally; the real Songverse screen frontend is not built here.
-use std::{collections::HashMap, path::{Component, Path, PathBuf}, sync::Arc};
-use axum::{extract::{Path as UrlPath, State}, http::{header, HeaderValue, StatusCode}, response::{IntoResponse, Response}, routing::get, Router};
+use axum::{
+    extract::{Path as UrlPath, State},
+    http::{header, HeaderValue, StatusCode},
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+use std::{
+    collections::HashMap,
+    path::{Component, Path, PathBuf},
+    sync::Arc,
+};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -22,7 +32,9 @@ type SharedBundle = Arc<Bundle>;
 fn safe_relative(path: &str) -> bool {
     !path.is_empty()
         && !path.contains('\\')
-        && Path::new(path).components().all(|part| matches!(part, Component::Normal(_)))
+        && Path::new(path)
+            .components()
+            .all(|part| matches!(part, Component::Normal(_)))
 }
 
 impl Bundle {
@@ -40,7 +52,10 @@ impl Bundle {
             return Err("bundle has too many files".into());
         }
         for (path, digest) in &manifest.files {
-            if !safe_relative(path) || digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
+            if !safe_relative(path)
+                || digest.len() != 64
+                || !digest.bytes().all(|b| b.is_ascii_hexdigit())
+            {
                 return Err(format!("invalid manifest file entry: {path}").into());
             }
             let absolute = tokio::fs::canonicalize(root.join(path)).await?;
@@ -52,7 +67,10 @@ impl Bundle {
                 return Err(format!("checksum mismatch: {path}").into());
             }
         }
-        Ok(Arc::new(Self { root, paths: manifest.files }))
+        Ok(Arc::new(Self {
+            root,
+            paths: manifest.files,
+        }))
     }
 
     async fn response(&self, path: &str) -> Response {
@@ -74,8 +92,14 @@ impl Bundle {
         }
         let mime = mime_guess::from_path(path).first_or_octet_stream();
         let mut response = bytes.into_response();
-        response.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str(mime.as_ref()).unwrap_or(HeaderValue::from_static("application/octet-stream")));
-        response.headers_mut().insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
+        response.headers_mut().insert(
+            header::CONTENT_TYPE,
+            HeaderValue::from_str(mime.as_ref())
+                .unwrap_or(HeaderValue::from_static("application/octet-stream")),
+        );
+        response
+            .headers_mut()
+            .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
         response
     }
 }

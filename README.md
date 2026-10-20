@@ -16,7 +16,7 @@ See [renderer integration](docs/renderer-integration.md) and [Debian setup](appl
 
 The Rust daemon can verify a SHA-256 manifest for an externally built frontend and serve `index.html` at `http://127.0.0.1:8787/offline/screen`. Run `python3 tools/make-screen-manifest.py /path/to/bundle --revision <songverse-commit>` and set `SONGVERSE_BUNDLE_DIR=/path/to/bundle` before launching the daemon. See [offline bundle design](docs/offline-bundle.md).
 
-**Important:** the actual upstream Songverse frontend has **not** been exported into this bundle format yet; disconnected rendering and device sync remain incomplete. A manifest detects file modification but does not authenticate its publisher.
+The real Songverse stage is packaged this way (see below); disconnected rendering of real sets and device sync remain incomplete. A manifest detects file modification but does not authenticate its publisher.
 
 ## Real Songverse ScreenStage offline-bundle demo
 
@@ -33,7 +33,7 @@ SONGVERSE_BUNDLE_DIR="/tmp/songverse-screen-$REV" cargo run -p songverse-player
 
 Open `http://127.0.0.1:8787/offline/screen` to render Rust mock presentation state through the **actual upstream React stage**. See [frontend build integration](docs/frontend-build.md).
 
-This has **not yet been build-verified**, and it is not the complete offline paired Songverse screen. Real cached song/set/theme data and synchronization are separate milestones.
+Verified on 2026-10-20 with Songverse at e8c3e55: the bundle builds, `package-upstream-screen.sh` packages it, the daemon verifies and serves it, and Chromium renders the demo set and moves with the arrow keys. Songverse checks its side on every push (`e2e/web/player-screen.test.mjs`). It is not the complete offline paired Songverse screen. Real cached song/set/theme data and synchronization are separate milestones.
 
 ## Rust development demo
 
