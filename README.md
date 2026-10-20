@@ -1,42 +1,45 @@
 # Songverse Player
 
-Rust-first, offline-capable Debian mini-PC appliance for Songverse live presentations and synchronized playback.
+Rust-first Debian mini-PC appliance for Songverse stage screens and synchronized playback.
 
-Based on [Songverse #62](https://github.com/bricedupuy/Songverse/issues/62) and [#247](https://github.com/bricedupuy/Songverse/issues/247).
+Design inputs: [Songverse #62](https://github.com/bricedupuy/Songverse/issues/62) (headless audio/cues) and [#247](https://github.com/bricedupuy/Songverse/issues/247) (mini PC, HDMI/NDI, offline LAN fallback).
 
-## Current milestone: HDMI vertical slice
+## HDMI milestone: real Songverse screen
 
-A Rust/Axum daemon serves a **mock offline set** and a local HTML/CSS/JS screen at `http://127.0.0.1:8787/screen`. Chromium can run in kiosk mode on the attached display. Next/previous slide controls work through a local API.
+The **real** Songverse HTML/CSS/JS screen is already implemented upstream in [Songverse `/screen`](https://github.com/bricedupuy/Songverse/blob/main/apps/web/src/routes/screen.tsx). On Debian, the kiosk can launch Chromium in the Cage Wayland compositor at `https://songverse.one/screen`, so pairing, themes and presentation behavior remain in the existing application.
 
-This is a prototype, **not** a production-ready offline failover, audio, NDI or bootable OS image.
+**This is currently an online integration:** kiosk launch files are committed but have not been validated on a physical mini PC. The screen is *not* bundled for offline usage yet.
 
-## Development
+See [renderer integration](docs/renderer-integration.md) and [Debian setup](appliance/debian/README.md).
 
-Requires Rust stable.
+## Rust development demo
+
+A separate mock set and local screen are useful for Rust orchestration development (they are **not** the upstream Songverse renderer).
 
 ```sh
 cargo run -p songverse-player
-# open http://127.0.0.1:8787/screen in Chromium
+# http://127.0.0.1:8787/screen
 curl http://127.0.0.1:8787/health
 curl -X POST http://127.0.0.1:8787/api/next
 cargo test --workspace
 ```
 
-For a local HDMI kiosk (requires a working graphical session and Chromium):
-```sh
-chromium --kiosk --no-first-run --disable-session-crashed-bubble http://127.0.0.1:8787/screen
-```
+## Repository layout
 
-## Architecture
+- `crates/core`: state model and navigation functions
+- `crates/player`: loopback-only Rust/Axum demo runtime
+- `web/renderer`: mock test presentation screen
+- `appliance/kiosk`: Cage + Chromium launch script and configuration
+- `appliance/systemd`: player and kiosk services
+- `appliance/debian`: manual setup guidance; image builder pending
+- `docs`: architecture, renderer integration and roadmap
 
-See [docs/architecture.md](docs/architecture.md) and [docs/roadmap.md](docs/roadmap.md).
+## Status and security
 
-The initial renderer is an isolated **mock**: production must reuse Songverse's existing screen frontend rather than reimplementing its themes. Rust handles orchestration, local cache, device identity, and eventually real-time audio. Chromium owns HTML/CSS/JS rendering and direct HDMI display; NDI will use a separate captured-frame backend.
+No production audio, NDI, offline caching, LAN sync/failover or reproducible Debian image yet. The mock API has no authentication and is deliberately bound to loopback. The upstream browser screen retains its pairing token in a persistent Chromium profile, requiring device access controls.
 
-## Security
-
-The HTTP API binds to loopback only. Do not expose the prototype to a LAN: it has no authentication or authorization yet. Device pairing, signed offline permissions and secure LAN access are future work.
+Read [architecture](docs/architecture.md) and [roadmap](docs/roadmap.md).
 
 ## Licensing
 
-Licensing is to be decided with the Songverse maintainers before redistributing the appliance and optional NDI components.
+Rust workspace metadata is provisional; review final application licensing and third-party NDI SDK distribution terms before release.
