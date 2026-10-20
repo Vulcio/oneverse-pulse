@@ -51,10 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Ok(dir) = std::env::var("SONGVERSE_BUNDLE_DIR") {
         // Never expose a directory that has not passed manifest verification.
         let bundle = offline::Bundle::open(&dir).await?;
-        app = app
-            .route("/offline/screen", get(offline::index))
-            .route("/assets/*path", get(offline::asset))
-            .with_state(bundle);
+        app = app.merge(offline::routes(bundle));
         println!("Verified local screen bundle: {dir}");
     }
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8787").await?;
