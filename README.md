@@ -18,6 +18,23 @@ The Rust daemon can verify a SHA-256 manifest for an externally built frontend a
 
 **Important:** the actual upstream Songverse frontend has **not** been exported into this bundle format yet; disconnected rendering and device sync remain incomplete. A manifest detects file modification but does not authenticate its publisher.
 
+## Real Songverse ScreenStage offline-bundle demo
+
+A **client-only build of the actual Songverse ScreenStage** is now defined upstream in [Songverse `apps/web/src/player-screen/`](https://github.com/bricedupuy/Songverse/tree/main/apps/web/src/player-screen). Build it from the main Songverse workspace:
+
+```sh
+cd ../Songverse
+pnpm --filter @songverse/web build:player-screen
+cd ../songverse-player
+REV=$(git -C ../Songverse rev-parse HEAD)
+sh tools/package-upstream-screen.sh ../Songverse "/tmp/songverse-screen-$REV" "$REV"
+SONGVERSE_BUNDLE_DIR="/tmp/songverse-screen-$REV" cargo run -p songverse-player
+```
+
+Open `http://127.0.0.1:8787/offline/screen` to render Rust mock presentation state through the **actual upstream React stage**. See [frontend build integration](docs/frontend-build.md).
+
+This has **not yet been build-verified**, and it is not the complete offline paired Songverse screen. Real cached song/set/theme data and synchronization are separate milestones.
+
 ## Rust development demo
 
 A separate mock set and local screen are useful for Rust orchestration development (they are **not** the upstream Songverse renderer).
