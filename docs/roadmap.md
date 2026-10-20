@@ -1,32 +1,36 @@
 # Roadmap
 
-Requirements: [#62](https://github.com/bricedupuy/Songverse/issues/62), [#247](https://github.com/bricedupuy/Songverse/issues/247). Related: Songverse #195 (offline screens), #196 (NDI), #13 (sync).
+Requirements: [#62](https://github.com/bricedupuy/Songverse/issues/62) and [#247](https://github.com/bricedupuy/Songverse/issues/247). Related Songverse issues #195, #196 and #13.
 
-## M0 — Rust + local HDMI demo (initial scaffold)
-- [x] Cargo workspace and Rust server
-- [x] Local mock set and slide navigation API
-- [x] Browser-rendered screen with keyboard navigation
-- [ ] Validate cargo build/tests in CI and on target hardware
-- [ ] Chromium kiosk and compositor startup under systemd
+## M0 — Rust and HDMI vertical slice
+- [x] Cargo workspace and local Rust demo server
+- [x] Mock set, navigation and browser display
+- [x] Identify upstream Songverse `/screen` and `ScreenStage` renderer
+- [x] Add Debian Cage/Chromium kiosk launcher and systemd unit
+- [ ] Validate CI build and tests
+- [ ] Validate dedicated-VT kiosk startup on target Debian mini PC
+- [ ] Verify screen pairing, theme changes and real HDMI rendering
 
-## M1 — Paired device
-- [ ] Pairing and revocable device credentials
-- [ ] Signed local identity and encrypted credential storage
-- [ ] Health, diagnostics, hardware detection and last-sync status
+## M1 — Device integration
+- [ ] Device pairing and revocable identity managed by Rust
+- [ ] Health, hardware and storage diagnostics
+- [ ] Browser process supervisor, failure recovery and sealed credentials
+- [ ] Harden and automate reproducible Debian appliance image
 
-## M2 — Offline presentation
-- [ ] Download and verify sets, themes, fonts and media
-- [ ] Replace mock renderer with actual Songverse screen frontend
-- [ ] Persist presentation state and support keyboard/clicker
-- [ ] Debian minimal image with automatic startup and recovery
+## M2 — Actual offline screen
+- [ ] Package upstream ScreenStage web bundle with compatible `@songverse/core`
+- [ ] Bundle fonts, images, video and required theme assets
+- [ ] Local authenticated API for cached screen state and controls
+- [ ] Atomic set/media downloads, checksums and disk policies
+- [ ] Persist screen and presentation state through restart
 
-## M3 — Local session continuity
-- [ ] Implement compatible local sync and clock
-- [ ] LAN discovery, authorized control and WAN failover
-- [ ] Safe reconciliation on cloud reconnect
+## M3 — Resilient synchronized control
+- [ ] Compatible Rust sync protocol and stable clock
+- [ ] LAN discovery and authorized local controls
+- [ ] Deterministic WAN failover and reconnect reconciliation
 
-## M4 — Audio and production video
-- [ ] Real-time audio engine, stems, click and cues
-- [ ] Multichannel interface and latency calibration
-- [ ] Independent NDI outputs, alpha and SDK compliance review
-- [ ] Multi-screen orchestration, telemetry and secure updates
+## M4 — Audio and NDI
+- [ ] Native real-time stems/click/cues and routing
+- [ ] Clock calibration and multidevice synchronization
+- [ ] Independent captured-frame output with NDI SDK and alpha validation
+- [ ] Multi-screen management, diagnostics and secure updates
