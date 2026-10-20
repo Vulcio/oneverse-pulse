@@ -1,7 +1,9 @@
 # Instructions for coding agents
 
 This repository is the Rust mini-PC player for [Songverse](https://github.com/bricedupuy/Songverse)
-(its issues #62 and #247). Songverse's own rules (its `CLAUDE.md`) apply here too.
+(its issues #62 and #247). Read [CLAUDE.md](CLAUDE.md) before changing anything: it is this
+repository's rulebook for every agent, whatever its name, with its layout, the end-to-end check of
+the screen bundle and the contracts with Songverse. Songverse's own rules apply here too. In short:
 
 ## Before every push
 
