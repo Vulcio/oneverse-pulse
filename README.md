@@ -12,6 +12,12 @@ The **real** Songverse HTML/CSS/JS screen is already implemented upstream in [So
 
 See [renderer integration](docs/renderer-integration.md) and [Debian setup](appliance/debian/README.md).
 
+## Verified local screen bundle (infrastructure)
+
+The Rust daemon can verify a SHA-256 manifest for an externally built frontend and serve `index.html` at `http://127.0.0.1:8787/offline/screen`. Run `python3 tools/make-screen-manifest.py /path/to/bundle --revision <songverse-commit>` and set `SONGVERSE_BUNDLE_DIR=/path/to/bundle` before launching the daemon. See [offline bundle design](docs/offline-bundle.md).
+
+**Important:** the actual upstream Songverse frontend has **not** been exported into this bundle format yet; disconnected rendering and device sync remain incomplete. A manifest detects file modification but does not authenticate its publisher.
+
 ## Rust development demo
 
 A separate mock set and local screen are useful for Rust orchestration development (they are **not** the upstream Songverse renderer).
@@ -32,7 +38,8 @@ cargo test --workspace
 - `appliance/kiosk`: Cage + Chromium launch script and configuration
 - `appliance/systemd`: player and kiosk services
 - `appliance/debian`: manual setup guidance; image builder pending
-- `docs`: architecture, renderer integration and roadmap
+- `tools`: verified bundle manifest generator
+- `docs`: architecture, renderer integration, offline bundle contract and roadmap
 
 ## Status and security
 
