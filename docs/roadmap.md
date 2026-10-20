@@ -18,6 +18,7 @@ Requirements: [#62](https://github.com/bricedupuy/Songverse/issues/62) and [#247
 - [ ] Harden and automate reproducible Debian appliance image
 
 ## M2 — Actual offline screen
+- [x] Implement SHA-256-verified read-only local frontend bundle serving
 - [ ] Package upstream ScreenStage web bundle with compatible `@songverse/core`
 - [ ] Bundle fonts, images, video and required theme assets
 - [ ] Local authenticated API for cached screen state and controls
