@@ -2,11 +2,11 @@
 
 Rust-first Debian mini-PC appliance for Songverse stage screens and synchronized playback.
 
-Design inputs: [Songverse #62](https://github.com/bricedupuy/Songverse/issues/62) (headless audio/cues) and [#247](https://github.com/bricedupuy/Songverse/issues/247) (mini PC, HDMI/NDI, offline LAN fallback).
+Design inputs: [Songverse #62](https://github.com/Vulcio/Oneverse/issues/62) (headless audio/cues) and [#247](https://github.com/Vulcio/Oneverse/issues/247) (mini PC, HDMI/NDI, offline LAN fallback).
 
 ## HDMI milestone: real Songverse screen
 
-The **real** Songverse HTML/CSS/JS screen is already implemented upstream in [Songverse `/screen`](https://github.com/bricedupuy/Songverse/blob/main/apps/web/src/routes/screen.tsx). On Debian, the kiosk can launch Chromium in the Cage Wayland compositor at `https://songverse.one/screen`, so pairing, themes and presentation behavior remain in the existing application.
+The **real** Songverse HTML/CSS/JS screen is already implemented upstream in [Songverse `/screen`](https://github.com/Vulcio/Oneverse/blob/main/apps/web/src/routes/screen.tsx). On Debian, the kiosk can launch Chromium in the Cage Wayland compositor at `https://songverse.one/screen`, so pairing, themes and presentation behavior remain in the existing application.
 
 **This is currently an online integration:** kiosk launch files are committed but have not been validated on a physical mini PC. The screen is *not* bundled for offline usage yet.
 
@@ -20,7 +20,7 @@ The real Songverse stage is packaged this way (see below); disconnected renderin
 
 ## Real Songverse ScreenStage offline-bundle demo
 
-A **client-only build of the actual Songverse ScreenStage** is now defined upstream in [Songverse `apps/web/src/player-screen/`](https://github.com/bricedupuy/Songverse/tree/main/apps/web/src/player-screen). Build it from the main Songverse workspace:
+A **client-only build of the actual Songverse ScreenStage** is now defined upstream in [Songverse `apps/web/src/player-screen/`](https://github.com/Vulcio/Oneverse/tree/main/apps/web/src/player-screen). Build it from the main Songverse workspace:
 
 ```sh
 cd ../Songverse

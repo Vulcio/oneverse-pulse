@@ -1,7 +1,7 @@
 # songverse-player - notes for Claude
 
 The Rust player for a mini PC on stage (Debian, HDMI and later NDI, offline fallback), part of
-[Songverse](https://github.com/bricedupuy/Songverse). Its plan lives in Songverse's issues: #247 (the
+[Songverse](https://github.com/Vulcio/Oneverse). Its plan lives in the issues of Oneverse, Songverse's repository: #247 (the
 on-site player: screens, offline copy of the sets, local control) and #62 (headless audio: click,
 cues, backing tracks). Songverse's own rules (its `CLAUDE.md`) apply here too.
 
@@ -55,7 +55,7 @@ SONGVERSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p songverse-player
 
 ## How to work
 
-- **An issue first,** in Songverse or here, referenced by every commit (`Refs bricedupuy/Songverse#247`).
+- **An issue first,** in Oneverse (Songverse's repository) or here, referenced by every commit (`Refs Vulcio/Oneverse#247`).
 - **One commit per change,** made with git, not file by file through the GitHub API, with a message
   that says what changed and why. Never the same message on several commits.
 - **Say only what you verified.** The README and docs say what was built, run and seen working, and

@@ -1,6 +1,6 @@
 # Roadmap
 
-Requirements: [#62](https://github.com/bricedupuy/Songverse/issues/62) and [#247](https://github.com/bricedupuy/Songverse/issues/247). Related Songverse issues #195, #196 and #13.
+Requirements: [#62](https://github.com/Vulcio/Oneverse/issues/62) and [#247](https://github.com/Vulcio/Oneverse/issues/247). Related Songverse issues #195, #196 and #13.
 
 ## M0 — Rust and HDMI vertical slice
 - [x] Cargo workspace and local Rust demo server

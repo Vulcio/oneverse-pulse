@@ -3,10 +3,10 @@
 ## Source of truth
 
 The upstream implementation already exists:
-- [Songverse `apps/web/src/routes/screen.tsx`](https://github.com/bricedupuy/Songverse/blob/main/apps/web/src/routes/screen.tsx) owns the screen page and presentation assembly.
-- [`apps/web/src/components/screen-stage.tsx`](https://github.com/bricedupuy/Songverse/blob/main/apps/web/src/components/screen-stage.tsx) owns staged visual output.
-- [`apps/web/src/lib/screen-display.ts`](https://github.com/bricedupuy/Songverse/blob/main/apps/web/src/lib/screen-display.ts) handles code pairing, screen tokens, loading and sync.
-- [`packages/core/src/screens/`](https://github.com/bricedupuy/Songverse/tree/main/packages/core/src/screens) defines themes and slide behavior.
+- [Songverse `apps/web/src/routes/screen.tsx`](https://github.com/Vulcio/Oneverse/blob/main/apps/web/src/routes/screen.tsx) owns the screen page and presentation assembly.
+- [`apps/web/src/components/screen-stage.tsx`](https://github.com/Vulcio/Oneverse/blob/main/apps/web/src/components/screen-stage.tsx) owns staged visual output.
+- [`apps/web/src/lib/screen-display.ts`](https://github.com/Vulcio/Oneverse/blob/main/apps/web/src/lib/screen-display.ts) handles code pairing, screen tokens, loading and sync.
+- [`packages/core/src/screens/`](https://github.com/Vulcio/Oneverse/tree/main/packages/core/src/screens) defines themes and slide behavior.
 
 Do **not** fork the production screen renderer into this Rust repository. The JavaScript bundle must be produced from the upstream Songverse web application, using compatible versions of `@songverse/core` and the API.
 

@@ -1,6 +1,6 @@
 # End-to-end standalone renderer development path
 
-The source of the real renderer remains [Songverse](https://github.com/bricedupuy/Songverse).
+The source of the real renderer remains [Songverse](https://github.com/Vulcio/Oneverse).
 
 ## Build the real ScreenStage frontend
 
