@@ -16,8 +16,8 @@ It emits the standalone, client-only screen entry in `dist/player-screen`, impor
 From the `songverse-player` repository, package the output as a Rust-compatible bundle:
 
 ```sh
-REV=$(git -C ../Songverse rev-parse HEAD)
-sh tools/package-upstream-screen.sh ../Songverse /tmp/songverse-screen-$REV "$REV"
+REV=$(git -C ../Oneverse rev-parse HEAD)
+sh tools/package-upstream-screen.sh ../Oneverse /tmp/songverse-screen-$REV "$REV"
 SONGVERSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p songverse-player
 ```
 

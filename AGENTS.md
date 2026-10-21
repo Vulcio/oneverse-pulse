@@ -25,7 +25,7 @@ python3 -m py_compile tools/make-screen-manifest.py
 - **Don't claim what you haven't run.** If you didn't build, run or test something, say so in the
   README and the commit. If you did, say what you ran.
 - **Don't fork Songverse.** The screen is Songverse's `ScreenStage`, built by Songverse
-  (`apps/web/src/player-screen/`, `pnpm --filter @songverse/web build:player-screen`). Changes it
+  (`apps/web/src/player-screen/`, `pnpm --filter @oneverse/web build:player-screen`). Changes it
   needs are made there, in their own commit with its own issue, and must pass Songverse's checks:
   `pnpm lint`, `pnpm type-check`, `pnpm test` and `e2e/web/player-screen.test.mjs`.
 - **Contracts between the two repositories** (the local API the screen reads, the bundle layout)

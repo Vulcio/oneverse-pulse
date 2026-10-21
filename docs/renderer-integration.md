@@ -8,7 +8,7 @@ The upstream implementation already exists:
 - [`apps/web/src/lib/screen-display.ts`](https://github.com/Vulcio/Oneverse/blob/main/apps/web/src/lib/screen-display.ts) handles code pairing, screen tokens, loading and sync.
 - [`packages/core/src/screens/`](https://github.com/Vulcio/Oneverse/tree/main/packages/core/src/screens) defines themes and slide behavior.
 
-Do **not** fork the production screen renderer into this Rust repository. The JavaScript bundle must be produced from the upstream Songverse web application, using compatible versions of `@songverse/core` and the API.
+Do **not** fork the production screen renderer into this Rust repository. The JavaScript bundle must be produced from the upstream Songverse web application, using compatible versions of `@oneverse/core` and the API.
 
 ## First vertical slice (online)
 

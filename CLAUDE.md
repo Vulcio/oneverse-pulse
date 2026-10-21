@@ -28,13 +28,13 @@ cargo test --workspace
 python3 -m py_compile tools/make-screen-manifest.py
 ```
 
-When the change touches the screen bundle, also check it end to end, with Songverse checked out
+When the change touches the screen bundle, also check it end to end, with Oneverse (Songverse's repository) checked out
 beside this repository:
 
 ```sh
-pnpm --dir ../Songverse --filter @songverse/web build:player-screen
-REV=$(git -C ../Songverse rev-parse HEAD)
-sh tools/package-upstream-screen.sh ../Songverse /tmp/songverse-screen-$REV "$REV"
+pnpm --dir ../Oneverse --filter @oneverse/web build:player-screen
+REV=$(git -C ../Oneverse rev-parse HEAD)
+sh tools/package-upstream-screen.sh ../Oneverse /tmp/songverse-screen-$REV "$REV"
 SONGVERSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p songverse-player
 # open http://127.0.0.1:8787/offline/screen in Chromium: the set shows, the arrow keys move it
 ```
@@ -42,7 +42,7 @@ SONGVERSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p songverse-player
 ## The screen is Songverse's
 
 - What the player shows on a screen is Songverse's `ScreenStage`, built by Songverse
-  (`apps/web/src/player-screen/`, `pnpm --filter @songverse/web build:player-screen`). Never write a
+  (`apps/web/src/player-screen/`, `pnpm --filter @oneverse/web build:player-screen`). Never write a
   second stage, theme or slide renderer here; never copy Songverse's source into this repository.
 - What the screen needs from the player (data, routes) changes in Songverse's player screen in its
   own commit, with its own issue, passing Songverse's checks (`pnpm lint`, `pnpm type-check`,

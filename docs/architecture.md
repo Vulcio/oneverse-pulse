@@ -22,7 +22,7 @@ A second rendering instance can feed a native capture pipeline → NDI sender. N
 - Navigation uses polling, not the production sync protocol.
 - No actual offline downloads, Chromium supervisor, NDI or audio playback yet.
 - Multi-output design should preserve independent screens and themes.
-- Evaluate the upstream `@songverse/core` sync protocol before defining Rust-compatible message contracts.
+- Evaluate the upstream `@oneverse/core` sync protocol before defining Rust-compatible message contracts.
 
 ## Production principles
 

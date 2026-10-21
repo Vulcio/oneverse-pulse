@@ -19,7 +19,7 @@ Requirements: [#62](https://github.com/Vulcio/Oneverse/issues/62) and [#247](htt
 
 ## M2 — Actual offline screen
 - [x] Implement SHA-256-verified read-only local frontend bundle serving
-- [ ] Package upstream ScreenStage web bundle with compatible `@songverse/core`
+- [ ] Package upstream ScreenStage web bundle with compatible `@oneverse/core`
 - [ ] Bundle fonts, images, video and required theme assets
 - [ ] Local authenticated API for cached screen state and controls
 - [ ] Atomic set/media downloads, checksums and disk policies

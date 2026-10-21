@@ -23,11 +23,11 @@ The real Songverse stage is packaged this way (see below); disconnected renderin
 A **client-only build of the actual Songverse ScreenStage** is now defined upstream in [Songverse `apps/web/src/player-screen/`](https://github.com/Vulcio/Oneverse/tree/main/apps/web/src/player-screen). Build it from the main Songverse workspace:
 
 ```sh
-cd ../Songverse
-pnpm --filter @songverse/web build:player-screen
+cd ../Oneverse
+pnpm --filter @oneverse/web build:player-screen
 cd ../songverse-player
-REV=$(git -C ../Songverse rev-parse HEAD)
-sh tools/package-upstream-screen.sh ../Songverse "/tmp/songverse-screen-$REV" "$REV"
+REV=$(git -C ../Oneverse rev-parse HEAD)
+sh tools/package-upstream-screen.sh ../Oneverse "/tmp/songverse-screen-$REV" "$REV"
 SONGVERSE_BUNDLE_DIR="/tmp/songverse-screen-$REV" cargo run -p songverse-player
 ```
 
