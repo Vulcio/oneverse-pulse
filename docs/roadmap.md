@@ -52,16 +52,20 @@ Tracked in [#1](https://github.com/Vulcio/oneverse-pulse/issues/1).
 
 ## P1 - The engine runs on the box (first run on the mini PC)
 
-- [ ] `pulsed` starts the engine as a child process and restarts it with backoff:
+Tracked in [#2](https://github.com/Vulcio/oneverse-pulse/issues/2). Software is exercised with
+a local stand-in cloud; P1 remains open until the mini-PC acceptance run below.
+
+- [x] `pulsed` starts the engine as a child process and restarts it with backoff:
   - from a pinned Node runtime and an installed `@oneverse/pulse` build (`dist/` plus production
     `node_modules`, or one bundled file);
   - with its environment (see AGENTS.md);
   - its stdout goes to the journal.
-- [ ] `pulsed`'s loopback API: `GET /health` gathers the engine's `/health` (pairing code, set,
+- [x] `pulsed`'s loopback API: `GET /health` gathers the engine's `/health` (pairing code, set,
       cloud, session, epoch) with versions, uptime, disk and temperature.
-- [ ] `tools/package-engine.sh`: builds `@oneverse/pulse` and `build:pulse` from an Oneverse
+- [x] `tools/package-engine.sh`: builds `@oneverse/pulse` and `build:pulse` from an Oneverse
       checkout into a verified bundle, the same way as the screen bundle (manifest, source revision).
-- [ ] `appliance/`: install steps for Node, the engine bundle and the `pulsed` service.
+- [x] `appliance/`: archive builder, installer and install steps for Node, the engine bundle
+  and the `pulsed` service. The privileged installer itself still needs the hardware run.
 - [ ] **On the mini PC**, the manual run below works, and the result is written in the README with
       the hardware's model:
   1. pair the box from Screens;

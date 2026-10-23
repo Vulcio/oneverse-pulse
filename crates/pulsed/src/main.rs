@@ -1,12 +1,17 @@
 mod config;
 mod dev;
+mod engine_bundle;
+mod health;
 mod offline;
+mod supervisor;
 
 use axum::{routing::get, Router};
 use config::Command;
 
-fn routes(dev: bool) -> Router {
-    let app = Router::new().route("/health", get(|| async { "ok" }));
+fn routes(dev: bool, health: health::Shared) -> Router {
+    let app = Router::new()
+        .route("/health", get(health::response))
+        .with_state(health);
     if dev {
         app.merge(dev::routes())
     } else {
@@ -27,19 +32,69 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Ok(());
         }
     };
-    let mut app = routes(dev);
+    let mut engine = supervisor::Config::from_env()?;
+    let mut state = health::Health::standalone();
+    if let Some(config) = &mut engine {
+        use std::os::unix::fs::PermissionsExt;
+        tokio::fs::create_dir_all(&config.data).await?;
+        tokio::fs::set_permissions(&config.data, std::fs::Permissions::from_mode(0o700)).await?;
+        config.data = tokio::fs::canonicalize(&config.data).await?;
+        if config.data.starts_with(&config.bundle) {
+            return Err("PULSE_DATA_DIR must be outside the engine bundle".into());
+        }
+        let manifest = engine_bundle::verified(config.bundle.clone()).await?;
+        state = std::sync::Arc::new(health::Health {
+            started: std::time::Instant::now(),
+            engine: std::sync::Arc::default(),
+            manifest: Some(manifest),
+            data: config.data.clone(),
+        });
+    }
+    let mut app = routes(dev, state.clone());
     if let Some(dir) = config::bundle_dir() {
         // Never expose a directory that has not passed manifest verification.
         let bundle = offline::Bundle::open(&dir).await?;
         app = app.merge(offline::routes(bundle));
         println!("Verified local screen bundle: {}", dir.to_string_lossy());
     }
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8787").await?;
-    println!("Oneverse Pulse: http://127.0.0.1:8787/health");
-    if dev {
-        println!("Development mocks enabled: http://127.0.0.1:8787/screen");
+    let port: u16 = std::env::var("PULSE_DAEMON_PORT")
+        .unwrap_or_else(|_| "8787".into())
+        .parse()?;
+    if port == 0 {
+        return Err("PULSE_DAEMON_PORT must be nonzero".into());
     }
-    axum::serve(listener, app).await?;
+    let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, port)).await?;
+    println!("Oneverse Pulse: http://127.0.0.1:{port}/health");
+    if dev {
+        println!("Development mocks enabled: http://127.0.0.1:{port}/screen");
+    }
+    let (shutdown, receiver) = tokio::sync::watch::channel(false);
+    let task = engine.map(|config| {
+        tokio::spawn(supervisor::run(
+            config,
+            state
+                .manifest
+                .as_ref()
+                .expect("configured engine manifest")
+                .clone(),
+            state.engine.clone(),
+            receiver,
+        ))
+    });
+    let shutdown_on_signal = shutdown.clone();
+    let result = axum::serve(listener, app)
+        .with_graceful_shutdown(async move {
+            use tokio::signal::unix::{signal, SignalKind};
+            let mut term = signal(SignalKind::terminate()).expect("SIGTERM handler");
+            tokio::select! { _ = tokio::signal::ctrl_c() => {}, _ = term.recv() => {} }
+            let _ = shutdown_on_signal.send(true);
+        })
+        .await;
+    let _ = shutdown.send(true);
+    if let Some(task) = task {
+        task.await?;
+    }
+    result?;
     Ok(())
 }
 
@@ -71,7 +126,7 @@ mod tests {
 
     #[tokio::test]
     async fn mocks_are_absent_by_default() {
-        let app = routes(false);
+        let app = routes(false, health::Health::standalone());
         assert_eq!(
             request(app.clone(), "GET", "/health").await.status(),
             StatusCode::OK
@@ -91,7 +146,7 @@ mod tests {
 
     #[tokio::test]
     async fn dev_keeps_the_prototype_navigation_contract() {
-        let app = routes(true);
+        let app = routes(true, health::Health::standalone());
         assert_eq!(
             request(app.clone(), "GET", "/screen").await.status(),
             StatusCode::OK
@@ -158,7 +213,8 @@ mod tests {
             .await
             .unwrap();
 
-        let app = routes(false).merge(offline::routes(offline::Bundle::open(&root).await.unwrap()));
+        let app = routes(false, health::Health::standalone())
+            .merge(offline::routes(offline::Bundle::open(&root).await.unwrap()));
         let response = request(app.clone(), "GET", "/offline/screen").await;
         assert_eq!(response.status(), StatusCode::OK);
         assert_eq!(
