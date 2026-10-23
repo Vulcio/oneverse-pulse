@@ -1,5 +1,9 @@
 # Verified local frontend bundle — first infrastructure increment
 
+> **Prototype.** This describes the prototype (mock `/api/state`, the player-screen build). Where Pulse
+> is going is in [architecture.md](architecture.md) and [roadmap.md](roadmap.md): the screen page
+> joins the room's `/sync` instead (roadmap P2).
+
 ## Scope
 
 The Rust daemon now supports read-only delivery of an **externally prepared** screen frontend bundle from a local directory. It verifies a SHA-256 digest manifest on startup and verifies each response's bytes. It only serves `index.html` at `/offline/screen` and manifest-listed assets under `/assets/*`, bound to `127.0.0.1:8787`.

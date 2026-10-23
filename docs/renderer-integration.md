@@ -1,5 +1,9 @@
 # Integrating the real Songverse renderer
 
+> **Prototype.** This describes the prototype (mock `/api/state`, the player-screen build). Where Pulse
+> is going is in [architecture.md](architecture.md) and [roadmap.md](roadmap.md): the screen page
+> joins the room's `/sync` instead (roadmap P2).
+
 ## Source of truth
 
 The upstream implementation already exists:

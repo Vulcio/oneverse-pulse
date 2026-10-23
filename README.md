@@ -116,13 +116,13 @@ The long-term component and binary naming will transition from `songverse-player
 
 ## Delivery plan
 
-1. **Oneverse Pulse identity:** repository and product naming; then migrate executable, service, packaging, and configuration identifiers with tests.
-2. **Real offline presentations:** versioned local screen-state contract, authorized cached sets/themes/media, and predictable state restoration.
-3. **Resilient event coordination:** device pairing, authenticated LAN control, reliable timing, cloud reconnect and reconciliation.
-4. **Production performance outputs:** native audio, calibrated hardware outputs, independent HDMI/NDI paths.
-5. **Extensible show control:** investigate MIDI instrument hosting and lighting protocols without weakening core reliability.
-
-The immediate implementation track follows [Vulcio/Oneverse issue #247](https://github.com/Vulcio/Oneverse/issues/247) (on-site/offline device). Audio timing, click, cues and tracks are tracked under [issue #62](https://github.com/Vulcio/Oneverse/issues/62).
+Pulse is two programs. The live engine (pairing, the cloud link, the session's mirror, takeover and
+handback, the room's server and Pulse's page) is TypeScript in Oneverse's
+[`apps/pulse`](https://github.com/Vulcio/Oneverse/tree/main/apps/pulse). This repository holds the
+box: `pulsed` (supervisor, health, updates, HDMI and NDI outputs, later audio, MIDI and lighting)
+and the Debian appliance. See [architecture](docs/architecture.md) and the
+[roadmap](docs/roadmap.md), which runs from P0 (one name, no mocks) and P1 (the engine on the mini
+PC) to P5 (NDI) and P6 (audio).
 
 ## Security and licensing
 
@@ -130,4 +130,4 @@ The current HTTP API binds to `127.0.0.1` and **has no authentication**. Do not 
 
 The workspace declares `AGPL-3.0-or-later`; confirm licensing across the Oneverse ecosystem and evaluate third-party NDI SDK terms before distributing an NDI-enabled build.
 
-Contributors and coding agents must read [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) before making changes, link commits to an issue, and run all required checks before pushing.
+Contributors and coding agents must read [AGENTS.md](AGENTS.md) before making changes, link commits to an issue, and run all required checks before pushing.

@@ -1,5 +1,9 @@
 # End-to-end standalone renderer development path
 
+> **Prototype.** This describes the prototype (mock `/api/state`, the player-screen build). Where Pulse
+> is going is in [architecture.md](architecture.md) and [roadmap.md](roadmap.md): the screen page
+> joins the room's `/sync` instead (roadmap P2).
+
 The source of the real renderer remains [Songverse](https://github.com/Vulcio/Oneverse).
 
 ## Build the real ScreenStage frontend
