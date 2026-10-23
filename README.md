@@ -9,20 +9,23 @@ fails and driving the room's screens, later audio, MIDI and lighting.
 
 **Development status:** the Rust daemon serves verified bundles and, with `--dev`, a mock set
 and screen. The Chromium/Cage kiosk and systemd units are written but **have never run on the
-target hardware**. This repository does not yet install or supervise the live engine.
+target hardware**. The daemon now supervises the packaged Node engine, with aggregate health,
+restart/backoff and child shutdown. A Debian release archive and installer are available;
+the first mini-PC installation and outage/handback acceptance run are still pending.
 
 ## Two programs, two repositories
 
 | Part | Repository | Responsibility |
 | --- | --- | --- |
 | Live engine (`@oneverse/pulse`, Node) | Oneverse, `apps/pulse` | Pairing, cloud connection, `LiveEngine`, session mirror/takeover/handback, set copy, room server and operator console |
-| `pulsed` and Debian appliance | This repository | Bundle serving today; process supervision, aggregate health, updates and outputs next |
+| `pulsed` and Debian appliance | This repository | Verified bundles, process supervision, aggregate health and installation; updates and outputs next |
 | Screen page (`ScreenStage`) | Oneverse, `packages/screen` | Shared rendering for every screen; Chromium renders it for HDMI |
 
 The Node engine owns the live session. Rust will follow the room server as a local client;
 it never keeps a second session or implements the cloud's reducer. The engine's pairing,
 mirror, takeover, handback, room server and console have been tested in Oneverse's CI against
-the API, **not on the mini PC**. Connecting this daemon to it is roadmap P1.
+the API, **not on the mini PC**. Daemon supervision is tested against the real engine with
+a local stand-in cloud; the hardware run is still roadmap P1.
 
 The current standalone frontend is Oneverse's prototype player-screen build. It reads mock
 `/api/state`, so it needs `--dev`. Roadmap P2 replaces it with a screen page that joins the
@@ -41,8 +44,27 @@ cargo run -p pulsed
 curl http://127.0.0.1:8787/health
 ```
 
-The API always binds to `127.0.0.1:8787`. `/health` currently returns `ok`; aggregate engine and
-box health comes in P1. It does not yet indicate readiness for a live event.
+The API binds to `127.0.0.1:8787` (a test port can be set with `PULSE_DAEMON_PORT`). `/health`
+returns JSON with daemon/bundle versions, uptime, available disk, optional temperature and
+child/engine health. A configured engine that cannot answer health yields HTTP 503. This
+does not indicate readiness for a live event. See [the engine runtime](docs/engine-runtime.md).
+
+## Install on a mini PC
+
+Use Debian 13 x86-64. Download the tested `oneverse-pulse-debian13-x86_64` CI artifact from a
+trusted build, extract its `.tar.gz`, and run:
+
+```sh
+cd oneverse-pulse
+sudo ./install.sh https://your-oneverse-api.example pulse-hall-1
+```
+
+The archive includes `pulsed`, Node, the engine, production modules and the console. The
+installer creates the service account, private state and systemd service; existing
+configuration and pairing data are preserved. No Node package manager or compiler is needed
+on the mini PC. Follow [the installation guide](appliance/debian/README.md) to pair it,
+configure the optional HDMI kiosk and run hardware acceptance. Installation on target
+hardware has not yet been verified.
 
 For the development prototype:
 
@@ -84,10 +106,11 @@ See [frontend build](docs/frontend-build.md), [bundle format](docs/offline-bundl
 | Current variable | Previous name (one release only) | Default |
 | --- | --- | --- |
 | `PULSE_BUNDLE_DIR` | `SONGVERSE_BUNDLE_DIR` | No bundle |
+| `PULSE_ENGINE_DIR` | — | No supervised engine |
 | `PULSE_SCREEN_URL` | `SONGVERSE_SCREEN_URL` | `https://screen.oneverse.top` (online screen) |
 | `PULSE_CHROMIUM_PROFILE` | `SONGVERSE_CHROMIUM_PROFILE` | `/var/lib/oneverse-pulse/chromium` |
 
-The daemon reads the bundle directory; the kiosk launcher reads the other two settings.
+The daemon reads the bundle directories; the kiosk launcher reads the screen URL and profile.
 Legacy variables emit warnings. A present `PULSE_*` variable takes precedence, including an
 explicit empty value, which is rejected rather than silently using an old value.
 
@@ -114,6 +137,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 python3 -m py_compile tools/make-screen-manifest.py
 sh -n appliance/kiosk/launch.sh tools/package-upstream-screen.sh
+bash -n appliance/install.sh tools/package-engine.sh tools/package-appliance.sh
 python3 -m unittest discover -s tools/tests
 ```
 
@@ -121,7 +145,20 @@ CI runs these checks and builds an `x86_64-unknown-linux-gnu` release binary in 
 (Trixie), uploaded as `pulsed-debian-trixie-x86_64`. That build does not qualify GPU, HDMI, NDI
 or audio operation on the appliance.
 
-**Verified on 2026-10-23:** in an Ubuntu 24.04 Linux development sandbox with Rust 1.99.1,
+The engine CI job also builds a complete archive against pinned Oneverse and Node revisions,
+then runs the packaged-engine integration test. Build one locally with
+`bash tools/package-appliance.sh ../Oneverse /tmp/oneverse-pulse.tar.gz <full-Oneverse-SHA>`.
+
+**P1 software verified on 2026-10-23:** in a Debian 13 x86-64 cloud workspace with Rust 1.99.1,
+Oneverse `c739fce529f59acbafa8bc3614ef33425d0dca02` and Node 24.19.0: formatting, Clippy,
+9 Rust tests, and 9 Python tests including the actual packaged-engine integration passed.
+The integration checks pairing-code propagation, the packaged console, child crash/restart,
+degraded health, occupied-room-port rejection, shutdown/reaping, and incomplete-bundle rejection.
+The Debian release archive was built; privileged installation, systemd boot, hardware,
+real-cloud pairing, outage/handback, HDMI and NDI remain unverified. P1 stays open for the
+mini-PC acceptance run. The release job in CI is configured to repeat the archive test.
+
+**P0 verified on 2026-10-23:** in an Ubuntu 24.04 Linux development sandbox with Rust 1.99.1,
 formatting, Clippy, 7 Rust tests, 5 launcher tests, Python compilation and shell syntax checks
 passed. The release binary built for `x86_64-unknown-linux-gnu`. HTTP smoke checks exercised
 default route isolation, `--dev` navigation, verified bundle delivery, legacy configuration,

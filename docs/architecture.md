@@ -64,8 +64,10 @@ This repository installs, starts and watches the engine. It never reimplements i
 ### pulsed (Rust, this repository)
 
 `pulsed` is the box's daemon, renamed from the prototype `songverse-player` in P0.
-Today it serves `/health` and verified bundles on loopback; the mock screen and navigation
-require `--dev`. Supervision, aggregate health and the outputs below are still the target shape.
+Today it serves JSON `/health` and verified bundles on loopback, verifies and supervises a
+packaged Node engine with restart/backoff, and reports that engine's health. The mock screen
+and navigation require `--dev`. See [engine runtime](engine-runtime.md). The output and
+watchdog work below, and validation on the mini PC, remain outstanding.
 
 - **Supervisor:**
   - starts the engine (a pinned Node runtime and a pinned `@oneverse/pulse` build) and the kiosk

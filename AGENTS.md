@@ -40,10 +40,12 @@ The layout today is the prototype. It is moving to the shape in `docs/architectu
 - `crates/pulse-core`: development-only mock state and navigation, with no I/O. It is due to be
   removed in roadmap P2.
 - `crates/pulsed`: the daemon (`pulsed`, `127.0.0.1:8787`):
+  - verifies and supervises a packaged Node engine (`PULSE_ENGINE_DIR`), with restart/backoff,
+    aggregate JSON health and child shutdown; see `docs/engine-runtime.md`;
   - only with `--dev`: the mock set (`/api/state`, `/api/next`, `/api/previous`) and mock screen (`/screen`);
   - the verified bundle server (`offline.rs`, `/offline/screen`, `/assets/*`, checked against a
     SHA-256 manifest). Keep the bundle server; it becomes how `pulsed` serves what it installs.
-- `tools/`: packages Oneverse's player-screen build into a verified bundle.
+- `tools/`: packages Oneverse's player-screen, engine and installable appliance into verified bundles.
 - `appliance/`: the kiosk (Cage + Chromium) and the systemd units. **None of it has run on the
   target hardware yet.** Say so wherever it matters.
 - `web/renderer/`: the mock screen, for working on the daemon only. It is never the real screen.
@@ -67,6 +69,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 python3 -m py_compile tools/make-screen-manifest.py
 sh -n appliance/kiosk/launch.sh tools/package-upstream-screen.sh
+bash -n appliance/install.sh tools/package-engine.sh tools/package-appliance.sh
 python3 -m unittest discover -s tools/tests
 ```
 
