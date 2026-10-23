@@ -17,12 +17,12 @@ vp build --config vite.player.config.ts
 
 It emits the standalone, client-only screen entry in `dist/player-screen`, importing Songverse's actual `ScreenStage` and styles. This build does **not** invoke the production TanStack Start SSR route.
 
-From the `songverse-player` repository, package the output as a Rust-compatible bundle:
+From the `oneverse-pulse` repository, package the output as a Rust-compatible bundle:
 
 ```sh
 REV=$(git -C ../Oneverse rev-parse HEAD)
 sh tools/package-upstream-screen.sh ../Oneverse /tmp/songverse-screen-$REV "$REV"
-SONGVERSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p songverse-player
+PULSE_BUNDLE_DIR=/tmp/songverse-screen-$REV cargo run -p pulsed -- --dev
 ```
 
 Open `http://127.0.0.1:8787/offline/screen` in Chromium. The page polls the Rust mock `/api/state`, maps mock slides into proper `ScreenSlide` values, and displays them with **the actual Songverse ScreenStage component**. Left/right navigation uses the existing local API.
@@ -43,8 +43,10 @@ Open `http://127.0.0.1:8787/offline/screen` in Chromium. The page polls the Rust
 - The script creates a file-integrity manifest, not signed or trusted release metadata.
 - Hardware GPU/HDMI operation has not been validated on the mini PC.
 
-## Next integration contract
+## Former integration proposal (superseded)
 
-Agree on a versioned `GET /api/local/screen-state` response representing the upstream `ScreenCurrent`, `SyncPresenting`, `SyncStage` and asset references. The Rust player caches set/theme/media content and serves local URLs; the frontend uses the same `renderChart`, `lyricSlides` and `ScreenStage` pipeline currently used by Songverse's `/screen` route.
+The former `GET /api/local/screen-state` proposal is superseded by roadmap P2:
+Oneverse's Node engine owns the session and set copy; the screen joins its room server.
+Rust never caches a second session or implements a screen-state API.
 
 Do not persist browser screen tokens in unencrypted frontend bundles or commit downloaded proprietary song content.

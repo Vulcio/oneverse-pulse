@@ -1,0 +1,23 @@
+[Unit]
+Description=Oneverse Pulse daemon
+After=network.target
+
+[Service]
+Type=simple
+User=pulse
+Group=pulse
+StateDirectory=oneverse-pulse
+StateDirectoryMode=0700
+WorkingDirectory=/var/lib/oneverse-pulse
+EnvironmentFile=-/etc/oneverse-pulse/pulsed.env
+UMask=0077
+ExecStart=/usr/local/bin/pulsed
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

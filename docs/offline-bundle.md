@@ -13,7 +13,7 @@ The daemon only serves what it's given; Songverse's client-only stage build, pac
 ## Bundle layout
 
 ```text
-/var/lib/songverse/bundles/<version>/
+/opt/oneverse-pulse/bundles/<version>/
   index.html
   manifest.json
   assets/
@@ -25,10 +25,13 @@ The manifest is `{ "format":1, "source_revision":"<upstream-commit>", "files": {
 For a trusted, already-built compatible bundle:
 ```sh
 python3 tools/make-screen-manifest.py /path/to/bundle --revision <songverse-commit>
-SONGVERSE_BUNDLE_DIR=/path/to/bundle cargo run -p songverse-player
+PULSE_BUNDLE_DIR=/path/to/bundle cargo run -p pulsed -- --dev
 # http://127.0.0.1:8787/offline/screen
 ```
-Set `SONGVERSE_SCREEN_URL=http://127.0.0.1:8787/offline/screen` in `/etc/songverse/kiosk.env` only after installing a compatible frontend bundle.
+Set `PULSE_SCREEN_URL=http://127.0.0.1:8787/offline/screen` in `/etc/oneverse-pulse/kiosk.env` only after installing a compatible frontend bundle.
+
+The prototype frontend needs `--dev` because it reads mock `/api/state`. The verified bundle
+server itself works without `--dev`; it does not enable any mock API.
 
 ## Missing frontend work
 

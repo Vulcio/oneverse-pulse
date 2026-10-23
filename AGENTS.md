@@ -37,10 +37,10 @@ a second stage, theme or slide renderer here, and never copy Oneverse's source i
 
 The layout today is the prototype. It is moving to the shape in `docs/architecture.md`.
 
-- `crates/core`: the prototype's mock state and navigation, with no I/O. It is due to be replaced
-  (roadmap P0).
-- `crates/player`: the prototype daemon (`songverse-player`, `127.0.0.1:8787`):
-  - the mock set (`/api/state`, `/api/next`, `/api/previous`) and the mock screen (`/screen`);
+- `crates/pulse-core`: development-only mock state and navigation, with no I/O. It is due to be
+  removed in roadmap P2.
+- `crates/pulsed`: the daemon (`pulsed`, `127.0.0.1:8787`):
+  - only with `--dev`: the mock set (`/api/state`, `/api/next`, `/api/previous`) and mock screen (`/screen`);
   - the verified bundle server (`offline.rs`, `/offline/screen`, `/assets/*`, checked against a
     SHA-256 manifest). Keep the bundle server; it becomes how `pulsed` serves what it installs.
 - `tools/`: packages Oneverse's player-screen build into a verified bundle.
@@ -52,9 +52,10 @@ The layout today is the prototype. It is moving to the shape in `docs/architectu
   - `frontend-build.md`, `offline-bundle.md` and `renderer-integration.md`, which describe the
     prototype and say where they're superseded.
 
-The names still say `songverse-player` (crates, binary, units, `/var/lib/songverse`, `SONGVERSE_*`
-variables). They are renamed in roadmap P0, as one change, with the old variables still read for one
-release.
+The P0 names are `pulse-core`, `pulsed`, `oneverse-pulse.service` and
+`oneverse-pulse-kiosk.service`, user `pulse`, and `/var/lib/oneverse-pulse` and
+`/etc/oneverse-pulse`. Configuration uses `PULSE_*`; the old `SONGVERSE_*` variables are still
+read for one release with a warning. A present new variable takes precedence over the old one.
 
 ## Before every push
 
@@ -66,6 +67,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 python3 -m py_compile tools/make-screen-manifest.py
 sh -n appliance/kiosk/launch.sh tools/package-upstream-screen.sh
+python3 -m unittest discover -s tools/tests
 ```
 
 A change that talks to the live engine is also checked against it, with Oneverse checked out beside

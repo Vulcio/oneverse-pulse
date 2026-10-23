@@ -11,6 +11,24 @@ jobs:
         with:
           components: rustfmt, clippy
       - run: cargo fmt --all -- --check
-      - run: cargo clippy --workspace --all-targets -- -D warnings
-      - run: cargo test --workspace
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo test --locked --workspace
       - run: python3 -m py_compile tools/make-screen-manifest.py
+      - run: sh -n appliance/kiosk/launch.sh tools/package-upstream-screen.sh
+      - run: python3 -m unittest discover -s tools/tests
+  release:
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    steps:
+      - name: Install Debian stable build tools
+        run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - run: cargo build --locked --release -p pulsed --target x86_64-unknown-linux-gnu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pulsed-debian-trixie-x86_64
+          path: target/x86_64-unknown-linux-gnu/release/pulsed
+          if-no-files-found: error

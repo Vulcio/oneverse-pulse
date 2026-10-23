@@ -1,5 +1,4 @@
-mod offline;
-
+//! Mock routes, enabled only by `pulsed --dev`.
 use axum::{
     extract::State,
     http::header,
@@ -7,8 +6,8 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use pulse_core::{advance, Set};
 use serde::Serialize;
-use songverse_player_core::{advance, Set};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -41,9 +40,6 @@ async fn previous(State(state): State<Shared>) -> Json<usize> {
     state.index = advance(state.index, state.set.slides.len(), -1);
     Json(state.index)
 }
-async fn health() -> &'static str {
-    "ok"
-}
 async fn screen() -> impl IntoResponse {
     (
         [(header::CACHE_CONTROL, "no-store")],
@@ -51,28 +47,16 @@ async fn screen() -> impl IntoResponse {
     )
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// Only constructed when the operator explicitly opts into mock data.
+pub fn routes() -> Router {
     let state = Arc::new(Mutex::new(PlayerState {
         set: Set::demo(),
         index: 0,
     }));
-    let mut app = Router::new()
-        .route("/health", get(health))
+    Router::new()
         .route("/api/state", get(snapshot))
         .route("/api/next", post(next))
         .route("/api/previous", post(previous))
         .route("/screen", get(screen))
-        .with_state(state);
-
-    if let Ok(dir) = std::env::var("SONGVERSE_BUNDLE_DIR") {
-        // Never expose a directory that has not passed manifest verification.
-        let bundle = offline::Bundle::open(&dir).await?;
-        app = app.merge(offline::routes(bundle));
-        println!("Verified local screen bundle: {dir}");
-    }
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8787").await?;
-    println!("Songverse Player: http://127.0.0.1:8787/screen");
-    axum::serve(listener, app).await?;
-    Ok(())
+        .with_state(state)
 }

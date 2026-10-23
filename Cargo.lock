@@ -385,6 +385,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "pulse-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "pulsed"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "hex",
+ "mime_guess",
+ "pulse-core",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
+ "tower",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -527,27 +549,6 @@ checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
 dependencies = [
  "libc",
  "windows-sys",
-]
-
-[[package]]
-name = "songverse-player"
-version = "0.1.0"
-dependencies = [
- "axum",
- "hex",
- "mime_guess",
- "serde",
- "serde_json",
- "sha2",
- "songverse-player-core",
- "tokio",
-]
-
-[[package]]
-name = "songverse-player-core"
-version = "0.1.0"
-dependencies = [
- "serde",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/player", "crates/core"]
+members = ["crates/pulsed", "crates/pulse-core"]
 resolver = "2"
 
 [workspace.package]

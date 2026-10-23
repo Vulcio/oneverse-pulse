@@ -2,89 +2,65 @@
 
 **The heartbeat of your live experience.**
 
-**Oneverse Pulse** is a Rust-first local execution and resilience platform for the [Oneverse ecosystem](https://github.com/Vulcio/Oneverse). Designed for dedicated Debian mini PCs, Pulse brings critical event services closer to the venue: screens, synchronized playback, local control, and eventually instruments, lighting, and automation.
+Oneverse Pulse is the on-site runtime and fallback node for the
+[Oneverse ecosystem](https://github.com/Vulcio/Oneverse): Songverse, and later Slideverse.
+It is intended for a Debian mini PC at the venue, keeping a live set running when the internet
+fails and driving the room's screens, later audio, MIDI and lighting.
 
-Its purpose is simple: **keep the experience running when the internet doesn't.**
+**Development status:** the Rust daemon serves verified bundles and, with `--dev`, a mock set
+and screen. The Chromium/Cage kiosk and systemd units are written but **have never run on the
+target hardware**. This repository does not yet install or supervise the live engine.
 
-Pulse is more than a player. It is intended to be the **on-site runtime and fallback node** for applications including Songverse and, in the future, Slideverse and other Oneverse products.
+## Two programs, two repositories
 
-> **Development status:** Pulse is an early prototype. A Rust daemon and a standalone build of Songverse's real `ScreenStage` have been demonstrated together; production offline continuity, audio, NDI, MIDI hosting, and lighting control are not yet implemented. The Debian HDMI kiosk has not been validated on target hardware.
-
-## What Pulse is becoming
-
-| Capability | Direction | Current status |
+| Part | Repository | Responsibility |
 | --- | --- | --- |
-| **Resilient local services** | Cache authorized event data, serve local APIs, recover gracefully from network loss, and reconcile with Oneverse when connectivity returns | Local loopback API and verified frontend bundle; real offline data sync pending |
-| **Screens and presentation** | Reuse Oneverse/Songverse screen rendering for venue displays, with independent HDMI and eventually NDI outputs | Upstream `ScreenStage` bundle demonstrated; kiosk configuration available, hardware validation pending |
-| **Audio and timing** | Backing tracks, stems, metronome, count-ins, spoken cues, multichannel outputs and synchronized playback | Planned; no production audio engine yet |
-| **Local orchestration** | Device coordination and event control over a resilient LAN | Planned |
-| **MIDI and instruments** | MIDI routing, external devices and potential hosting of virtual instruments | Future exploration |
-| **Lighting and show control** | Lighting cues and integration with DMX, Art-Net and sACN equipment | Future exploration |
+| Live engine (`@oneverse/pulse`, Node) | Oneverse, `apps/pulse` | Pairing, cloud connection, `LiveEngine`, session mirror/takeover/handback, set copy, room server and operator console |
+| `pulsed` and Debian appliance | This repository | Bundle serving today; process supervision, aggregate health, updates and outputs next |
+| Screen page (`ScreenStage`) | Oneverse, `packages/screen` | Shared rendering for every screen; Chromium renders it for HDMI |
 
-These are **product directions**, not claims of shipped features. Pulse should remain useful outside music-focused contexts as Oneverse grows.
+The Node engine owns the live session. Rust will follow the room server as a local client;
+it never keeps a second session or implements the cloud's reducer. The engine's pairing,
+mirror, takeover, handback, room server and console have been tested in Oneverse's CI against
+the API, **not on the mini PC**. Connecting this daemon to it is roadmap P1.
 
-## Architecture
+The current standalone frontend is Oneverse's prototype player-screen build. It reads mock
+`/api/state`, so it needs `--dev`. Roadmap P2 replaces it with a screen page that joins the
+Node room server and reuses the same `ScreenStage`. No renderer is copied into this repository.
 
-Pulse separates the event's **control and execution plane** from the **visual renderer**:
+Read [the architecture](docs/architecture.md), [roadmap](docs/roadmap.md) and
+[agent instructions](AGENTS.md) before contributing.
 
-```text
-               Oneverse cloud and applications
-          (Songverse · Slideverse · future apps)
-                            │
-                     secure synchronization
-                            │
-                   ┌────────▼────────┐
-                   │  Oneverse Pulse │
-                   │  Rust runtime   │
-                   │  Local services │
-                   │  Offline state  │
-                   └────────┬────────┘
-                            │
-            ┌───────────────┼────────────────┐
-            │               │                │
-      Screen renderer   Audio & timing   MIDI / lighting
-      Songverse's own   (future Rust     (future modules)
-       ScreenStage       engine)
-            │
-      Chromium / Wayland
-            │
-           HDMI            NDI (future)
-```
+## Run the daemon
 
-**One shared renderer:** Pulse does not fork Songverse's screens. The standalone frontend is built in [Oneverse's `apps/web/src/player-screen/`](https://github.com/Vulcio/Oneverse/tree/main/apps/web/src/player-screen), reusing the actual `ScreenStage`, themes, CSS, and translations. Chromium runs that HTML/CSS/JavaScript output. Rust handles the local service boundary and will eventually handle cache, synchronization, device operations, and real-time audio.
-
-The future MIDI and lighting modules must not interfere with time-critical audio, presentation, or fallback reliability.
-
-See [architecture](docs/architecture.md), [roadmap](docs/roadmap.md) and [frontend integration](docs/frontend-build.md).
-
-## What works today
-
-- A Rust/Axum daemon serving a mock set and local navigation controls on **loopback only**.
-- A verified frontend bundle server: SHA-256 manifest checks at startup and per request.
-- A standalone client-only build of **Songverse's real `ScreenStage`**, packaged and served by the daemon.
-- A prototype Chromium/Cage kiosk configuration for direct HDMI output.
-
-**Previously verified (2026-10-20):** with Oneverse/Songverse source at `e8c3e55`, the standalone frontend built, the packaging script produced a bundle, the Rust daemon verified and served it, and Chromium displayed the demo set with working arrow-key navigation. This is a record of that test, **not** a claim of fresh verification on the present repository revision.
-
-**Not yet delivered:** persistent real set/theme/media downloads; offline pairing and failover; authenticated LAN control; production sound; HDMI hardware qualification; NDI; MIDI virtual instruments; lighting control; a reproducible appliance image.
-
-## Run the Rust development prototype
-
-Rust stable is required. The Cargo package and binary **still use the transitional name `songverse-player`**; the repository/product rename does not automatically rename its executable or service units.
+Rust stable is required. The package and binary are `pulsed`.
 
 ```sh
-cargo run -p songverse-player
-# Open http://127.0.0.1:8787/screen
+cargo run -p pulsed
+# Health only, plus a verified bundle if configured; no mock routes.
 curl http://127.0.0.1:8787/health
-curl -X POST http://127.0.0.1:8787/api/next
-cargo test --workspace
 ```
 
-This route uses a **mock HTML screen**, not Songverse's production renderer.
+The API always binds to `127.0.0.1:8787`. `/health` currently returns `ok`; aggregate engine and
+box health comes in P1. It does not yet indicate readiness for a live event.
 
-### Build and serve the real Songverse stage locally
+For the development prototype:
 
-Checkout [Vulcio/Oneverse](https://github.com/Vulcio/Oneverse) alongside this repository, with its workspace dependencies installed:
+```sh
+cargo run -p pulsed -- --dev
+# Open http://127.0.0.1:8787/screen
+curl http://127.0.0.1:8787/api/state
+curl -X POST http://127.0.0.1:8787/api/next
+curl -X POST http://127.0.0.1:8787/api/previous
+```
+
+Without `--dev`, `/screen`, `/api/state`, `/api/next` and `/api/previous` return 404, and the mock
+set is not constructed. `--help` and `--version` work without starting the server.
+
+### Build and serve the real ScreenStage prototype
+
+Check out [Vulcio/Oneverse](https://github.com/Vulcio/Oneverse) beside this repository and install
+its workspace dependencies:
 
 ```sh
 cd ../Oneverse
@@ -92,42 +68,76 @@ pnpm --filter @oneverse/web build:player-screen
 cd ../oneverse-pulse
 REV=$(git -C ../Oneverse rev-parse HEAD)
 sh tools/package-upstream-screen.sh ../Oneverse "/tmp/oneverse-pulse-screen-$REV" "$REV"
-SONGVERSE_BUNDLE_DIR="/tmp/oneverse-pulse-screen-$REV" cargo run -p songverse-player
+PULSE_BUNDLE_DIR="/tmp/oneverse-pulse-screen-$REV" cargo run -p pulsed -- --dev
 ```
 
-Then open **http://127.0.0.1:8787/offline/screen**. This frontend renders the **mock local state using the real `ScreenStage`**. It does not yet download or play a live show's content offline.
+Open **http://127.0.0.1:8787/offline/screen**. This renders the mock set with the real
+`ScreenStage`; it does not download a live show's content. Bundle serving at `/offline/screen`
+and `/assets/*` works independently of `--dev`, with checksums verified at startup and per
+request. An invalid configured bundle prevents startup.
 
-The packaging contract is documented in [docs/offline-bundle.md](docs/offline-bundle.md). See [docs/renderer-integration.md](docs/renderer-integration.md) for the online screen and HDMI kiosk approach.
+See [frontend build](docs/frontend-build.md), [bundle format](docs/offline-bundle.md), and
+[Debian installation and migration](appliance/debian/README.md).
 
-## Development layout
+## Configuration and naming migration
+
+| Current variable | Previous name (one release only) | Default |
+| --- | --- | --- |
+| `PULSE_BUNDLE_DIR` | `SONGVERSE_BUNDLE_DIR` | No bundle |
+| `PULSE_SCREEN_URL` | `SONGVERSE_SCREEN_URL` | `https://screen.oneverse.top` (online screen) |
+| `PULSE_CHROMIUM_PROFILE` | `SONGVERSE_CHROMIUM_PROFILE` | `/var/lib/oneverse-pulse/chromium` |
+
+The daemon reads the bundle directory; the kiosk launcher reads the other two settings.
+Legacy variables emit warnings. A present `PULSE_*` variable takes precedence, including an
+explicit empty value, which is rejected rather than silently using an old value.
+
+The service user is `pulse`; state lives in `/var/lib/oneverse-pulse`, configuration in
+`/etc/oneverse-pulse`. Units are `oneverse-pulse.service` and `oneverse-pulse-kiosk.service`.
+Old users, files and units require [manual migration](appliance/debian/README.md#migration-from-the-prototype).
+The default screen URL has also moved from `https://songverse.one/screen` to
+`https://screen.oneverse.top`; explicitly configured URLs are retained.
+
+## Development layout and checks
 
 | Path | Purpose |
 | --- | --- |
-| `crates/core/` | Rust state and navigation primitives |
-| `crates/player/` | Local loopback daemon and verified bundle serving |
-| `web/renderer/` | Isolated **mock** presentation screen for Rust development |
-| `appliance/kiosk/` | Chromium/Cage kiosk launcher and configuration |
-| `appliance/systemd/` | Prototype systemd service units (transitional names) |
-| `appliance/debian/` | Manual Debian appliance setup notes |
-| `tools/` | Upstream screen bundle packaging and manifest generation |
-| `docs/` | Architecture, contracts, integration details, roadmap |
+| `crates/pulse-core/` | Development-only mock state and navigation, removed in P2 |
+| `crates/pulsed/` | Loopback daemon, CLI, mock routes and verified bundle serving |
+| `web/renderer/` | Mock screen for daemon development |
+| `appliance/` | Chromium/Cage launcher, systemd units and Debian setup notes |
+| `tools/` | Screen packaging, manifest generation and launcher tests |
+| `docs/` | Architecture, integration details and ordered roadmap |
 
-The long-term component and binary naming will transition from `songverse-player` to **Oneverse Pulse** in separate, tested changes. Existing environment variables and script paths intentionally remain unchanged for compatibility until then.
+```sh
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+python3 -m py_compile tools/make-screen-manifest.py
+sh -n appliance/kiosk/launch.sh tools/package-upstream-screen.sh
+python3 -m unittest discover -s tools/tests
+```
 
-## Delivery plan
+CI runs these checks and builds an `x86_64-unknown-linux-gnu` release binary in Debian stable
+(Trixie), uploaded as `pulsed-debian-trixie-x86_64`. That build does not qualify GPU, HDMI, NDI
+or audio operation on the appliance.
 
-Pulse is two programs. The live engine (pairing, the cloud link, the session's mirror, takeover and
-handback, the room's server and Pulse's page) is TypeScript in Oneverse's
-[`apps/pulse`](https://github.com/Vulcio/Oneverse/tree/main/apps/pulse). This repository holds the
-box: `pulsed` (supervisor, health, updates, HDMI and NDI outputs, later audio, MIDI and lighting)
-and the Debian appliance. See [architecture](docs/architecture.md) and the
-[roadmap](docs/roadmap.md), which runs from P0 (one name, no mocks) and P1 (the engine on the mini
-PC) to P5 (NDI) and P6 (audio).
+**Verified on 2026-10-23:** in an Ubuntu 24.04 Linux development sandbox with Rust 1.99.1,
+formatting, Clippy, 7 Rust tests, 5 launcher tests, Python compilation and shell syntax checks
+passed. The release binary built for `x86_64-unknown-linux-gnu`. HTTP smoke checks exercised
+default route isolation, `--dev` navigation, verified bundle delivery, legacy configuration,
+new-variable precedence and corrupt-bundle startup rejection. No browser or real Oneverse
+frontend was rebuilt or run in that check; no target hardware was used.
+
+**Previously verified (2026-10-20):** on a laptop, Oneverse source at `e8c3e55` built a
+standalone frontend, packaging produced a verified bundle, and Chromium displayed its mock
+set with arrow-key navigation. This records that earlier test, not fresh browser verification.
 
 ## Security and licensing
 
-The current HTTP API binds to `127.0.0.1` and **has no authentication**. Do not expose it to a venue LAN or the public internet. A SHA-256 manifest verifies bundle integrity but **does not authenticate its publisher**; secure signing and managed updates are still required. Keep paired-screen Chromium profiles private.
+The daemon's loopback API has no authentication. The Node room server is the intended LAN
+entry point, using passes signed by the cloud. Keep the Chromium profile private; do not
+enable remote debugging. Bundle manifests prove integrity, not who published a bundle;
+signed releases and rollback are roadmap P4.
 
-The workspace declares `AGPL-3.0-or-later`; confirm licensing across the Oneverse ecosystem and evaluate third-party NDI SDK terms before distributing an NDI-enabled build.
-
-Contributors and coding agents must read [AGENTS.md](AGENTS.md) before making changes, link commits to an issue, and run all required checks before pushing.
+The workspace is AGPL-3.0-or-later. NDI, audio, MIDI and lighting are not implemented.
+NDI remains a future opt-in build feature, subject to SDK licence review and approval.

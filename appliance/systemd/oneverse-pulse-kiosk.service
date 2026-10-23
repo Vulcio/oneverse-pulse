@@ -1,5 +1,5 @@
 [Unit]
-Description=Songverse Chromium HDMI kiosk
+Description=Oneverse Pulse Chromium HDMI kiosk
 After=systemd-user-sessions.service
 Wants=systemd-user-sessions.service
 # Run on a dedicated local VT, not concurrently with a desktop display manager.
@@ -7,13 +7,14 @@ Conflicts=display-manager.service
 
 [Service]
 Type=simple
-User=songverse
-Group=songverse
+User=pulse
+Group=pulse
 SupplementaryGroups=video render input
 PAMName=login
-WorkingDirectory=/var/lib/songverse
-EnvironmentFile=-/etc/songverse/kiosk.env
-ExecStart=/usr/local/lib/songverse/launch-kiosk.sh
+WorkingDirectory=/var/lib/oneverse-pulse
+EnvironmentFile=-/etc/oneverse-pulse/kiosk.env
+UMask=0077
+ExecStart=/usr/local/lib/oneverse-pulse/launch-kiosk.sh
 Restart=always
 RestartSec=3
 StandardInput=tty

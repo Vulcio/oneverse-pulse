@@ -1,9 +1,9 @@
 #!/bin/sh
 # Package Songverse's dedicated, client-only ScreenStage build for the Rust player.
-# Run this script from songverse-player after building the upstream web workspace.
+# Run this script from oneverse-pulse after building the upstream web workspace.
 set -eu
 if [ "$#" -ne 3 ]; then
-  echo "Usage: $0 /path/to/Songverse /path/to/bundle SONGVERSE_COMMIT_SHA" >&2
+  echo "Usage: $0 /path/to/Songverse /path/to/bundle ONEVERSE_COMMIT_SHA" >&2
   exit 2
 fi
 SOURCE=$1
@@ -29,4 +29,4 @@ cp "$BUILT/player-screen.html" "$DEST/index.html"
 cp -R "$BUILT/assets/." "$DEST/assets/"
 python3 "$(dirname "$0")/make-screen-manifest.py" "$DEST" --revision "$REVISION"
 echo "Bundle staged at $DEST"
-echo "Set SONGVERSE_BUNDLE_DIR=$DEST and point Chromium to http://127.0.0.1:8787/offline/screen"
+echo "Run pulsed --dev with PULSE_BUNDLE_DIR=$DEST and point Chromium to http://127.0.0.1:8787/offline/screen"

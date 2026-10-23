@@ -1,3 +1,4 @@
+//! Development-only mock set and navigation. Never the live session authority.
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
@@ -15,11 +16,11 @@ pub struct Set {
 impl Set {
     pub fn demo() -> Self {
         Self {
-            title: "Songverse Offline Demo".into(),
+            title: "Oneverse Pulse Development Demo".into(),
             slides: vec![
                 Slide {
                     title: "Welcome".into(),
-                    lines: vec!["Songverse Player".into(), "Rust + Chromium + HDMI".into()],
+                    lines: vec!["Oneverse Pulse".into(), "Rust + Chromium + HDMI".into()],
                 },
                 Slide {
                     title: "Verse".into(),

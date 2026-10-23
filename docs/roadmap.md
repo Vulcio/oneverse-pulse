@@ -19,7 +19,7 @@ The requirements are in Oneverse's issues: [#247](https://github.com/Vulcio/Onev
 ## Done so far (prototype)
 
 - [x] Cargo workspace, mock set and navigation, mock screen
-- [x] SHA-256-verified bundle server (`crates/player/src/offline.rs`)
+- [x] SHA-256-verified bundle server (`crates/pulsed/src/offline.rs`)
 - [x] Oneverse's real `ScreenStage` built client-only, packaged and served. It was seen in Chromium
       on a laptop on 2026-10-20, against the mock set.
 - [x] Cage + Chromium kiosk and systemd units, written but **not run on the hardware**
@@ -36,14 +36,16 @@ In Oneverse (`apps/pulse`, tested in its CI against the API, never on the mini P
 
 ## P0 - One name, no mocks in the way
 
-- [ ] Rename `songverse-player` to `oneverse-pulse`, as one change:
+Tracked in [#1](https://github.com/Vulcio/oneverse-pulse/issues/1).
+
+- [x] Rename `songverse-player` to `oneverse-pulse`, as one change:
   - crates `pulse-core` and `pulsed`, the binary `pulsed`;
   - units `oneverse-pulse.service` and `oneverse-pulse-kiosk.service`;
   - user `pulse`, paths `/var/lib/oneverse-pulse` and `/etc/oneverse-pulse`, variables `PULSE_*`.
   - The old `SONGVERSE_*` variables are still read for one release, with a warning.
-- [ ] Mark the mock set, mock screen and `/api/state` as development-only (behind a `--dev` flag).
+- [x] Mark the mock set, mock screen and `/api/state` as development-only (behind a `--dev` flag).
       Keep the bundle server.
-- [ ] CI also checks the shell scripts (`sh -n`) and builds a release binary for `x86_64` Debian
+- [x] CI also checks the shell scripts (`sh -n`) and builds a release binary for `x86_64` Debian
       stable.
 
 **Done when:** CI is green, and `pulsed --dev` runs what `songverse-player` ran.
@@ -99,7 +101,7 @@ engine (from a built Oneverse checkout) against a stand-in cloud, and sees it as
 - [ ] `pulsed` installs the screen page as a bundle, serves it on loopback, and starts the kiosk on
       it.
 - [ ] One kiosk per connected HDMI output, each its own screen.
-- [ ] Remove the mock screen and `crates/core`'s mock state.
+- [ ] Remove the mock screen and `crates/pulse-core`'s mock state.
 - [ ] **On the mini PC:** a screen on HDMI follows the set online, keeps following it with the
       internet unplugged, and survives a reboot in the middle of it (same song, same slide).
 

@@ -18,7 +18,7 @@ Do **not** fork the production screen renderer into this Rust repository. The Ja
 
 1. The mini PC boots Debian.
 2. systemd launches Cage (single-app Wayland compositor).
-3. Cage starts Chromium fullscreen on `https://songverse.one/screen`.
+3. Cage starts Chromium fullscreen on `https://screen.oneverse.top`.
 4. The existing Songverse screen UI shows its pairing code; pair the screen in Songverse.
 5. Songverse's real HTML/CSS/JS, themes and screen session render directly through the GPU to HDMI.
 
@@ -36,4 +36,4 @@ NDI: independent offscreen Chromium instance or capture compositor → RGBA fram
 
 ## Security and operations
 
-Browser profile retains a screen token. Restrict permissions on `/var/lib/songverse/chromium`; a compromise of that account can expose the paired screen. Do not enable unauthenticated remote debugging. The kiosk requires local-seat access (logind/PAM, VT and graphics devices); validate service startup on actual target hardware. Configure firewall and unattended updates as separate production work.
+Browser profile retains a screen token. Restrict permissions on `/var/lib/oneverse-pulse/chromium`; a compromise of that account can expose the paired screen. Do not enable unauthenticated remote debugging. The kiosk requires local-seat access (logind/PAM, VT and graphics devices); validate service startup on actual target hardware. Configure firewall and unattended updates as separate production work.
