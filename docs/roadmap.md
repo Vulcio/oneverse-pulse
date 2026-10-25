@@ -143,14 +143,41 @@ pacing is measured, and the results are written with the hardware's model.
 
 ## P6 - Audio (#62)
 
+Tracked in [Pulse #4](https://github.com/Vulcio/oneverse-pulse/issues/4) and
+[Oneverse #62](https://github.com/Vulcio/Oneverse/issues/62).
+
 - [ ] An audio engine in Rust (cpal or JACK/PipeWire, chosen in the issue): click, count-in and
       spoken cues, scheduled on the box's audio clock from the session's timeline.
 - [ ] Backing tracks and stems from the set's copy, routed to the interface's channels.
+- [ ] Synchronized playback with measured latency/drift budgets and an explicit mapping from
+      the session timeline to the local sample clock, including offline continuity.
+- [ ] Generate LTC first: a dedicated output, configurable frame rate/start/offset, and tested
+      pause/seek/loop behavior. Incoming LTC chase is deferred; LTC does not clock audio interfaces.
 - [ ] Latency and drift measured against a phone running Songverse's metronome in the same session,
       and written down.
 
+## P7 - Instruments, plugin racks and web presets
+
+Tracked in [#5](https://github.com/Vulcio/oneverse-pulse/issues/5), with the detailed
+[plugin-hosting plan](plugin-hosting.md). This is planned work after P6, with no plugin
+hosting or preset editor delivered yet. It preserves P1–P6's existing order.
+
+- [ ] P7.0: compare hosts and publish measured budgets; design shared schemas/commands first
+      in [Oneverse #325](https://github.com/Vulcio/Oneverse/issues/325).
+- [ ] P7.1: a supervised native Linux instrument and generic browser controls, with real
+      MIDI/audio fixtures ([#6](https://github.com/Vulcio/oneverse-pulse/issues/6)).
+- [ ] P7.2: complete sound presets and rack snapshots, atomic state/asset storage and offline
+      recall/preflight (#6 and Oneverse #325).
+- [ ] P7.3: song/section scenes, scheduled recall, note continuity and latency compensation,
+      keeping LTC isolated ([#7](https://github.com/Vulcio/oneverse-pulse/issues/7)).
+- [ ] P7.4: native VST3 qualification and sustained hardware/fault tests against the fixed
+      budgets (#7). Host choice and plugin support require evidence, not a format label.
+
+**Done when:** the browser can create and recall sounds/racks/scenes through the real native
+host offline, and measured hardware results meet the plan's timing/reliability criteria.
+
 ## Later
 
-MIDI (routing, program changes on song change), lighting (DMX, Art-Net, sACN cues on slides or
+Broader MIDI integration, lighting (DMX, Art-Net, sACN cues on slides or
 sections), and more than one Pulse in a room. Each gets its own issue first, and none may cost
 audio or screen timing.
