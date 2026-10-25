@@ -90,6 +90,15 @@ require `--dev`. Supervision, aggregate health and the outputs below are still t
     ticks.
   - **MIDI and lighting:** later, and never at the cost of audio or screen timing.
 
+### Instruments and plugin control (planned P7)
+
+After P6's synchronized audio and LTC foundation, [P7](plugin-hosting.md) adds supervised native
+engine workers with common parameter metadata, sound presets, rack snapshots and song/section
+scenes. Oneverse owns their schemas, web UI, permissions and session decisions; Rust owns native
+DSP/MIDI, local device mapping and scheduled execution. Audio stays on Pulse, with cached state
+for offline recall. The browser controls it through the authenticated room, not an exposed host
+socket. Host selection, supported Linux plugins and latency budgets remain qualification work.
+
 ### The screen page (Oneverse)
 
 What every output shows is Oneverse's `ScreenStage` (`packages/screen`), the same as on any screen.

@@ -31,6 +31,10 @@ Node room server and reuses the same `ScreenStage`. No renderer is copied into t
 Read [the architecture](docs/architecture.md), [roadmap](docs/roadmap.md) and
 [agent instructions](AGENTS.md) before contributing.
 
+Future instrument hosting, native web preset editing, rack snapshots and song/section scenes
+are scoped in the [P7 plan](docs/plugin-hosting.md), after P6 synchronized audio and LTC.
+They are planned capabilities, not current runtime features.
+
 ## Run the daemon
 
 Rust stable is required. The package and binary are `pulsed`.
